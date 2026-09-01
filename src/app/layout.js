@@ -1,5 +1,14 @@
 import '../styles/globals.css'
 
+// ─── VIEWPORT (Next.js 14 — must be separate from metadata) ──────────────────
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: '#FFD100',
+}
+
+// ─── METADATA ─────────────────────────────────────────────────────────────────
 export const metadata = {
   title: 'AeroPulse Diagnostics — Acoustic Appliance Analysis',
   description:
@@ -9,12 +18,6 @@ export const metadata = {
     'refrigerator repair', 'AC repair', 'microwave repair', 'DIY appliance fix',
   ],
   authors: [{ name: 'AeroPulse Diagnostics' }],
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-  },
-  themeColor: '#FFD100',
   openGraph: {
     title: 'AeroPulse Diagnostics',
     description: 'Acoustic appliance fault detection powered by local algorithmic analysis.',
