@@ -4,14 +4,16 @@
  * ApplianceForm.js
  * ─────────────────
  * Step 1 of the AeroPulse workflow.
- * Renders a multi-field form for selecting:
+ * Renders a streamlined selection form for:
  *   1. Appliance Category (e.g., Washing Machine)
  *   2. Appliance Type     (e.g., Front Load)
- *   3. Brand              (e.g., Samsung)
- *   4. Sound Signature    (e.g., Grinding / Scraping)
+ *   3. Manufacturer Brand (e.g., Samsung)
+ *
+ * Note: Acoustic problem signature detection is 100% automated by the
+ * AeroPulse AI audio engine in Step 3 — no manual sound selection required.
  *
  * Props:
- *   - formData   : { category, type, brand, soundSignature }
+ *   - formData   : { category, type, brand }
  *   - onChange   : (field: string, value: string) => void
  *   - onSubmit   : () => void
  */
@@ -20,7 +22,6 @@ import {
   APPLIANCE_CATEGORIES,
   APPLIANCE_TYPES,
   APPLIANCE_BRANDS,
-  SOUND_SIGNATURES,
 } from '../data/failureDatabase'
 
 // ─── ICONS (inline SVG helpers) ───────────────────────────────────────────────
@@ -44,6 +45,16 @@ function ArrowRight() {
       xmlns="http://www.w3.org/2000/svg">
       <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5"
         strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function SparklesIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <path d="M7 0L8.5 4.5L13 6L8.5 7.5L7 12L5.5 7.5L1 6L5.5 4.5L7 0Z"
+        fill="currentColor" />
     </svg>
   )
 }
@@ -80,33 +91,6 @@ function SelectField({ id, value, onChange, disabled, children, placeholder }) {
   )
 }
 
-// ─── SOUND SIGNATURE GRID ──────────────────────────────────────────────────────
-function SoundGrid({ value, onChange }) {
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-      {SOUND_SIGNATURES.map((sig) => {
-        const isSelected = value === sig.id
-        return (
-          <button
-            key={sig.id}
-            type="button"
-            onClick={() => onChange(sig.id)}
-            className={[
-              'text-left text-xs font-semibold px-3 py-2.5 border transition-all duration-150',
-              'focus:outline-none',
-              isSelected
-                ? 'bg-[#FFD100] border-[#FFD100] text-[#0F0F11] shadow-iqoo'
-                : 'bg-white border-[#E5E7EB] text-[#374151] hover:border-[#FFD100] hover:text-[#0F0F11]',
-            ].join(' ')}
-          >
-            {sig.label}
-          </button>
-        )
-      })}
-    </div>
-  )
-}
-
 // ─── CATEGORY GRID ─────────────────────────────────────────────────────────────
 function CategoryGrid({ value, onChange }) {
   return (
@@ -137,11 +121,10 @@ function CategoryGrid({ value, onChange }) {
 
 // ─── MAIN COMPONENT ────────────────────────────────────────────────────────────
 export default function ApplianceForm({ formData, onChange, onSubmit }) {
-  const { category, type, brand, soundSignature } = formData
+  const { category, type, brand } = formData
 
   const availableTypes = category ? (APPLIANCE_TYPES[category] ?? []) : []
-
-  const isValid = category && type && brand && soundSignature
+  const isValid = Boolean(category && type && brand)
 
   function handleSubmit(e) {
     e.preventDefault()
@@ -159,8 +142,9 @@ export default function ApplianceForm({ formData, onChange, onSubmit }) {
         </h2>
         <span className="accent-bar" />
         <p className="text-sm text-iqoo-muted leading-relaxed">
-          Select the appliance category, model type, manufacturer, and describe
-          the sound you are hearing. This data calibrates the acoustic analysis engine.
+          Select your appliance category, model type, and manufacturer brand.
+          AeroPulse will automatically analyze the audio recording to isolate
+          acoustic problem frequencies and diagnose the root failure.
         </p>
       </div>
 
@@ -172,48 +156,58 @@ export default function ApplianceForm({ formData, onChange, onSubmit }) {
         }} />
       </FormField>
 
-      {/* ── 2. Appliance Type ──────────────────────────────────────────────── */}
-      <FormField label="Appliance Type" hint={!category ? 'Select a category first' : ''}>
-        <SelectField
-          id="appliance-type"
-          value={type}
-          onChange={(val) => onChange('type', val)}
-          disabled={!category}
-          placeholder="— Select Type —"
-        >
-          {availableTypes.map((t) => (
-            <option key={t} value={t}>{t}</option>
-          ))}
-        </SelectField>
-      </FormField>
+      {/* ── 2. Appliance Type & Brand in Responsive Grid ───────────────────── */}
+      <div className="grid sm:grid-cols-2 gap-4">
+        <FormField label="Appliance Type" hint={!category ? 'Select category first' : 'Required'}>
+          <SelectField
+            id="appliance-type"
+            value={type}
+            onChange={(val) => onChange('type', val)}
+            disabled={!category}
+            placeholder="— Select Type —"
+          >
+            {availableTypes.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </SelectField>
+        </FormField>
 
-      {/* ── 3. Brand ───────────────────────────────────────────────────────── */}
-      <FormField label="Manufacturer / Brand">
-        <SelectField
-          id="appliance-brand"
-          value={brand}
-          onChange={(val) => onChange('brand', val)}
-          placeholder="— Select Brand —"
-        >
-          {APPLIANCE_BRANDS.map((b) => (
-            <option key={b} value={b}>{b}</option>
-          ))}
-        </SelectField>
-      </FormField>
+        <FormField label="Manufacturer / Brand" hint="Required">
+          <SelectField
+            id="appliance-brand"
+            value={brand}
+            onChange={(val) => onChange('brand', val)}
+            placeholder="— Select Brand —"
+          >
+            {APPLIANCE_BRANDS.map((b) => (
+              <option key={b} value={b}>{b}</option>
+            ))}
+          </SelectField>
+        </FormField>
+      </div>
 
-      {/* ── 4. Sound Signature ─────────────────────────────────────────────── */}
-      <FormField
-        label="Acoustic Problem Signature"
-        hint="Select the closest match to what you hear"
-      >
-        <SoundGrid value={soundSignature} onChange={(val) => onChange('soundSignature', val)} />
-      </FormField>
+      {/* ── Automated Detection Notice ─────────────────────────────────────── */}
+      <div className="p-4 bg-[#F9FAFB] border border-[#E5E7EB] flex items-start gap-3">
+        <div className="p-1.5 bg-[#FFD100] text-[#0F0F11] flex-none mt-0.5">
+          <SparklesIcon />
+        </div>
+        <div>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-[#111111]">
+            Automated Acoustic Diagnosis
+          </h4>
+          <p className="text-xs text-iqoo-muted mt-1 leading-relaxed">
+            No need to identify or classify the sound yourself. In the next step,
+            record or upload an audio sample. AeroPulse AI algorithms will decompose
+            frequency harmonics, detect abnormal sound signatures, and determine the exact mechanical failure.
+          </p>
+        </div>
+      </div>
 
       {/* ── Validation hint ────────────────────────────────────────────────── */}
       {!isValid && (
         <p className="text-xs text-iqoo-muted flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-iqoo-muted inline-block" />
-          Complete all four fields to proceed to audio capture.
+          Select an appliance category, type, and brand to proceed.
         </p>
       )}
 

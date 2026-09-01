@@ -168,7 +168,7 @@ export default function DiagnosticReport({ result, onReset }) {
     title, component, diagnosis,
     diySteps, partsRequired, safetyNotes, estimatedCost, professionalNote,
     appliance, audio, matchedAt, engineVersion, modelId, processingMs,
-    isSeededMatch,
+    isSeededMatch, detectedSignatureLabel, acousticProfile,
   } = result
 
   const matchedDate = new Date(matchedAt).toLocaleString('en-IN', {
@@ -185,6 +185,7 @@ export default function DiagnosticReport({ result, onReset }) {
     dryer: 'Clothes Dryer',
   }
   const categoryLabel = CATEGORY_LABELS[appliance.category] ?? appliance.category
+  const soundLabel = detectedSignatureLabel || appliance.detectedSignatureLabel || 'Acoustic Anomaly'
 
   return (
     <div className="space-y-6 animate-slide-up">
@@ -197,7 +198,12 @@ export default function DiagnosticReport({ result, onReset }) {
 
         <div className="mt-5 flex items-start justify-between gap-4 flex-wrap">
           <div className="space-y-2">
-            <p className="section-label text-[#6B7280]">Step 4 of 4 — Acoustic Diagnosis Report</p>
+            <div className="flex items-center gap-2">
+              <span className="section-label text-[#6B7280]">Step 4 of 4</span>
+              <span className="text-xs bg-[#FFD100] text-[#0F0F11] font-extrabold px-2 py-0.5 tracking-wider">
+                AUTO-DIAGNOSED
+              </span>
+            </div>
             <h2 className="text-xl sm:text-2xl font-bold text-white leading-tight">
               {title}
             </h2>
@@ -224,8 +230,10 @@ export default function DiagnosticReport({ result, onReset }) {
             <p className="text-sm font-semibold text-white mt-0.5">{appliance.brand} · {appliance.type}</p>
           </div>
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">Audio Sample</p>
-            <p className="text-sm font-semibold text-white mt-0.5">{audio.filename}</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">Auto-Detected Sound</p>
+            <p className="text-sm font-semibold text-[#FFD100] mt-0.5 truncate" title={soundLabel}>
+              {soundLabel}
+            </p>
           </div>
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">Analyzed At</p>
@@ -234,7 +242,7 @@ export default function DiagnosticReport({ result, onReset }) {
         </div>
       </div>
 
-      {/* ── Confidence panel ─────────────────────────────────────────────── */}
+      {/* ── Confidence & Acoustic Telemetry panel ─────────────────────────── */}
       <div className="card-dark p-5 space-y-4">
         <ConfidenceBar confidence={confidence} />
         <div className="flex items-center gap-3 flex-wrap">
@@ -250,7 +258,7 @@ export default function DiagnosticReport({ result, onReset }) {
           </span>
 
           {isSeededMatch ? (
-            <span className="chip-success">✓ Seeded Pattern Match</span>
+            <span className="chip-success">✓ Auto-Matched Failure Model</span>
           ) : (
             <span className="chip-warn">⚠ Fallback Diagnosis — Manual Inspection Advised</span>
           )}
@@ -259,6 +267,30 @@ export default function DiagnosticReport({ result, onReset }) {
             {engineVersion} · {processingMs}ms
           </span>
         </div>
+
+        {/* Telemetry Breakdown */}
+        {acousticProfile && (
+          <div className="pt-3 border-t border-[#2A2A30] grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div className="bg-[#1A1A1F] p-2.5 border border-[#2A2A30]">
+              <p className="text-[10px] uppercase font-bold text-[#6B7280]">Identified Sound</p>
+              <p className="font-semibold text-white mt-0.5 truncate">{acousticProfile.label || soundLabel}</p>
+            </div>
+            <div className="bg-[#1A1A1F] p-2.5 border border-[#2A2A30]">
+              <p className="text-[10px] uppercase font-bold text-[#6B7280]">Dominant Freq</p>
+              <p className="font-semibold text-[#FFD100] mt-0.5">{acousticProfile.dominantFreq}</p>
+            </div>
+            <div className="bg-[#1A1A1F] p-2.5 border border-[#2A2A30]">
+              <p className="text-[10px] uppercase font-bold text-[#6B7280]">Spectral Pattern</p>
+              <p className="font-semibold text-white mt-0.5 truncate" title={acousticProfile.pattern}>
+                {acousticProfile.pattern}
+              </p>
+            </div>
+            <div className="bg-[#1A1A1F] p-2.5 border border-[#2A2A30]">
+              <p className="text-[10px] uppercase font-bold text-[#6B7280]">Signal-to-Noise</p>
+              <p className="font-semibold text-[#22C55E] mt-0.5">{acousticProfile.snr}</p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════ */}

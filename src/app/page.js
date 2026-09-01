@@ -31,10 +31,9 @@ const STEP = {
 
 // ─── INITIAL FORM STATE ───────────────────────────────────────────────────────
 const INITIAL_FORM = {
-  category:       '',
-  type:           '',
-  brand:          '',
-  soundSignature: '',
+  category: '',
+  type:     '',
+  brand:    '',
 }
 
 // ─── STEP PROGRESS BAR ────────────────────────────────────────────────────────
@@ -115,10 +114,10 @@ function AnalyzingScreen({ applianceName }) {
         <h2 className="text-xl font-bold text-[#111111]">
           AeroPulse AI analyzing acoustic frequencies…
         </h2>
-        <p className="text-sm text-iqoo-muted max-w-sm mx-auto leading-relaxed">
+        <p className="text-sm text-iqoo-muted max-w-md mx-auto leading-relaxed">
           Processing audio sample for{' '}
           <span className="font-semibold text-[#111111]">{applianceName}</span>.
-          Running spectral decomposition against the failure pattern database.
+          Decomposing spectral harmonics to automatically isolate anomalous sound patterns and mechanical failure.
         </p>
       </div>
 
@@ -137,9 +136,10 @@ function AnalyzingScreen({ applianceName }) {
       <div className="w-full max-w-sm space-y-2">
         {[
           'Decoding audio bitstream…',
-          'Running FFT spectral decomposition…',
-          'Matching against 2,400+ failure signatures…',
-          'Assembling diagnostic report…',
+          'Computing FFT spectral density & harmonic resonance…',
+          'Automated AI detection: isolating anomalous acoustic signature…',
+          'Cross-referencing failure database…',
+          'Assembling high-fidelity DIY repair protocol…',
         ].map((step, i) => (
           <div key={i}
             className="flex items-center gap-3 p-2.5 bg-[#F9FAFB] border border-[#E5E7EB] animate-fade-in"

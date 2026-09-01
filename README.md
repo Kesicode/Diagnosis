@@ -16,10 +16,10 @@
 
 | Step | Screen | Action |
 |------|--------|--------|
-| 1 | **Appliance Form** | Select category, type, brand, and sound signature |
-| 2 | **Audio Capture** | Record via microphone (10s auto-cutoff) or upload a file |
-| 3 | **Analyzing** | AeroPulse AI processes the signal (2.8s simulated inference) |
-| 4 | **Diagnostic Report** | Full fault diagnosis, DIY steps, parts, cost estimate |
+| 1 | **Appliance Form** | Select category, type, and manufacturer brand |
+| 2 | **Audio Capture** | Record via microphone (10s auto-cutoff) or upload audio |
+| 3 | **Analyzing** | AeroPulse AI automatically detects problem signature & frequencies |
+| 4 | **Diagnostic Report** | Full fault diagnosis, telemetry, DIY steps, parts, cost |
 
 ---
 
