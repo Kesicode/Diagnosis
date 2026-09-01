@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AeroPulse Diagnostics — Complete Technical & Architectural Specification</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm;
+      @bottom-right {
+        content: counter(page);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #111111;
+      background: #FFFFFF;
+      line-height: 1.5;
+      font-size: 10pt;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    /* ─── COVER / HEADER BANNER ─── */
+    .header-banner {
+      background: #0F0F11;
+      color: #FFFFFF;
+      padding: 24px;
+      margin-bottom: 20px;
+      border-left: 6px solid #FFD100;
+    }
+    .badge-iqoo {
+      display: inline-block;
+      background: #FFD100;
+      color: #0F0F11;
+      font-weight: 800;
+      font-size: 8pt;
+      padding: 3px 8px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .header-title {
+      font-size: 20pt;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      color: #FFFFFF;
+    }
+    .header-subtitle {
+      font-size: 10pt;
+      color: #9CA3AF;
+      margin-top: 6px;
+    }
+    .meta-bar {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #2A2A30;
+      display: flex;
+      justify-content: space-between;
+      font-size: 8pt;
+      color: #9CA3AF;
+    }
+    .meta-bar strong {
+      color: #FFFFFF;
+    }
+
+    /* ─── TYPOGRAPHY ─── */
+    h2 {
+      font-size: 13pt;
+      font-weight: 800;
+      color: #0F0F11;
+      margin-top: 18px;
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 2px solid #FFD100;
+      letter-spacing: -0.2px;
+    }
+    h3 {
+      font-size: 11pt;
+      font-weight: 700;
+      color: #111111;
+      margin-top: 12px;
+      margin-bottom: 6px;
+    }
+    p {
+      margin-bottom: 8px;
+      color: #374151;
+      font-size: 9.5pt;
+    }
+
+    /* ─── SECTIONS & CARDS ─── */
+    .card {
+      border: 1px solid #E5E7EB;
+      background: #FFFFFF;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      page-break-inside: avoid;
+    }
+    .card-dark {
+      background: #0F0F11;
+      color: #FFFFFF;
+      border: 1px solid #2A2A30;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      page-break-inside: avoid;
+    }
+    .card-dark h3 {
+      color: #FFD100;
+    }
+    .card-dark p {
+      color: #D1D5DB;
+    }
+
+    /* ─── GRIDS ─── */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+      page-break-inside: avoid;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .metric-box {
+      background: #1A1A1F;
+      border: 1px solid #2A2A30;
+      padding: 8px 10px;
+    }
+    .metric-box .label {
+      font-size: 7pt;
+      font-weight: 700;
+      color: #6B7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .metric-box .val {
+      font-size: 9pt;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-top: 2px;
+    }
+    .metric-box .val.accent {
+      color: #FFD100;
+    }
+    .metric-box .val.success {
+      color: #22C55E;
+    }
+
+    /* ─── TABLES ─── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 14px 0;
+      font-size: 8.5pt;
+      page-break-inside: avoid;
+    }
+    th {
+      background: #0F0F11;
+      color: #FFFFFF;
+      text-align: left;
+      padding: 7px 10px;
+      font-weight: 700;
+      font-size: 8pt;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: 1px solid #0F0F11;
+    }
+    td {
+      padding: 7px 10px;
+      border: 1px solid #E5E7EB;
+      vertical-align: top;
+      color: #374151;
+    }
+    tr:nth-child(even) td {
+      background: #F9FAFB;
+    }
+
+    /* ─── STEP CALLOUTS ─── */
+    .step-block {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 10px;
+      page-break-inside: avoid;
+    }
+    .step-num {
+      width: 24px;
+      height: 24px;
+      background: #FFD100;
+      color: #0F0F11;
+      font-weight: 800;
+      font-size: 9pt;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-content {
+      flex: 1;
+    }
+    .step-title {
+      font-weight: 700;
+      font-size: 9.5pt;
+      color: #111111;
+      margin-bottom: 2px;
+    }
+
+    /* ─── CODE & CODE BLOCKS ─── */
+    code {
+      font-family: "JetBrains Mono", Consolas, monospace;
+      font-size: 8pt;
+      background: #F3F4F6;
+      padding: 2px 4px;
+      color: #111111;
+    }
+    pre {
+      font-family: "JetBrains Mono", Consolas, monospace;
+      font-size: 7.8pt;
+      background: #0F0F11;
+      color: #E5E7EB;
+      padding: 10px 12px;
+      border-left: 3px solid #FFD100;
+      margin: 8px 0 12px 0;
+      white-space: pre-wrap;
+      page-break-inside: avoid;
+    }
+
+    /* ─── CALLOUT BOXES ─── */
+    .alert-box {
+      border-left: 4px solid #EF4444;
+      background: #FEF2F2;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      font-size: 8.5pt;
+      color: #991B1B;
+      page-break-inside: avoid;
+    }
+    .info-box {
+      border-left: 4px solid #FFD100;
+      background: #FFFBEB;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      font-size: 8.5pt;
+      color: #78350F;
+      page-break-inside: avoid;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    .footer-note {
+      font-size: 7.5pt;
+      color: #9CA3AF;
+      text-align: center;
+      margin-top: 20px;
+      border-top: 1px solid #E5E7EB;
+      padding-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════ -->
+  <!-- PAGE 1: COVER & EXECUTIVE SUMMARY                                        -->
+  <!-- ═════════════════════════════════════════════════════════════════════════ -->
+
+  <div class="header-banner">
+    <span class="badge-iqoo">System Technical Specification</span>
+    <h1 class="header-title">AEROPULSE DIAGNOSTICS</h1>
+    <div class="header-subtitle">
+      Universal Acoustic Electronics Appliance Fault Detection & Automated DIY Repair Platform
+    </div>
+    <div class="meta-bar">
+      <div><strong>Version:</strong> 1.5.0-auto</div>
+      <div><strong>Design System:</strong> iQOO High-Contrast Utility</div>
+      <div><strong>Stack:</strong> Next.js 14 · Web Audio API · Tailwind CSS</div>
+      <div><strong>Repository:</strong> github.com/Kesicode/Diagnosis</div>
+    </div>
+  </div>
+
+  <h2>1. Executive Summary & Product Vision</h2>
+  <p>
+    <strong>AeroPulse Diagnostics</strong> is an advanced, privacy-first single-page web application (SPA) that enables users to diagnose mechanical and electrical household appliance malfunctions purely through sound. Using either a live microphone stream or an uploaded audio file, the system’s local algorithmic engine decomposes frequency harmonics, isolates anomalous acoustic signatures, and matches them against curated failure models to return high-fidelity DIY repair instructions.
+  </p>
+  <p>
+    <strong>Zero-Guesswork Acoustic Classification:</strong> Unlike legacy diagnostic checklists where non-technical users must diagnose whether an appliance is making a "grinding", "humming", or "rattling" sound, AeroPulse removes manual sound selection entirely. The user selects only the appliance type and manufacturer brand; the engine’s automated spectral analysis isolates the defect signature directly from the audio recording.
+  </p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3 style="color:#0F0F11; margin-top:0;">Privacy-First Architecture</h3>
+      <p style="font-size:8.5pt;">
+        Audio processing, waveform visualization, and diagnostic inference are evaluated entirely client-side in the browser. No raw audio blobs or audio recordings leave the user’s local workstation.
+      </p>
+    </div>
+    <div class="card">
+      <h3 style="color:#0F0F11; margin-top:0;">iQOO Smartphone Aesthetics</h3>
+      <p style="font-size:8.5pt;">
+        Built on a modern utility theme: Cyber Yellow (<code>#FFD100</code>), Deep Obsidian (<code>#0F0F11</code>), Crisp White, and Clean Slate (<code>#E5E7EB</code>). Avoids generic gradients and AI slop patterns.
+      </p>
+    </div>
+  </div>
+
+  <h2>2. Architectural Overview & Workflow</h2>
+  <p>
+    The application is structured as a 4-step state machine orchestrating data capture, audio processing, algorithmic classification, and technical report delivery.
+  </p>
+
+  <div class="step-block">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <div class="step-title">Step 1: Appliance Identification (ApplianceForm.js)</div>
+      <p>
+        The user selects the appliance category (Washing Machine, Refrigerator, Split AC, Microwave, Dishwasher, Dryer), selects the specific model type (e.g., Front Load, Top Load, Inverter), and specifies the manufacturer brand (Samsung, LG, Whirlpool, Bosch, Haier, IFB, Godrej, Panasonic, etc.). Manual sound picking is omitted.
+      </p>
+    </div>
+  </div>
+
+  <div class="step-block">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <div class="step-title">Step 2: Acoustic Signal Capture (AudioRecorder.js & WaveformVisual.js)</div>
+      <p>
+        Dual-mode audio capture interface: (1) Live microphone capture via <code>navigator.mediaDevices.getUserMedia</code> with an automated 10-second cutoff and circular countdown timer; (2) Drag-and-drop or browse file upload supporting <code>.wav</code>, <code>.mp3</code>, <code>.m4a</code>, <code>.webm</code>, <code>.ogg</code>, and <code>.aac</code>. Features an integrated HTML5 Canvas oscilloscope with Web Audio API <code>AnalyserNode</code>.
+      </p>
+    </div>
+  </div>
+
+  <div class="step-block">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <div class="step-title">Step 3: Automated Spectral Analysis Pipeline (audioEngine.js)</div>
+      <p>
+        Executes a 2.8-second simulated machine inference cycle with spinning rings and progressive pipeline logs. Decompresses bitstreams, computes FFT spectral density, and classifies the acoustic signature without user input.
+      </p>
+    </div>
+  </div>
+
+  <div class="step-block">
+    <div class="step-num">4</div>
+    <div class="step-content">
+      <div class="step-title">Step 4: Diagnostic Report Dashboard (DiagnosticReport.js)</div>
+      <p>
+        Renders a high-contrast dashboard detailing the auto-detected sound, dominant frequency, spectral pattern, signal-to-noise ratio, technical diagnosis, safety warnings, numbered DIY steps, required replacement parts, and cost estimates.
+      </p>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════ -->
+  <!-- PAGE 2: ACOUSTIC TELEMETRY & KNOWLEDGE BASE                              -->
+  <!-- ═════════════════════════════════════════════════════════════════════════ -->
+  <div class="page-break"></div>
+
+  <h2>3. Automated Acoustic Analysis & Telemetry Engine</h2>
+  <p>
+    The <code>audioEngine.js</code> module evaluates captured audio signals by modeling acoustic telemetry parameters. When an audio blob is received, the engine automatically extracts and presents:
+  </p>
+
+  <div class="card-dark">
+    <h3 style="margin-top:0;">AeroPulse Telemetry Output Model</h3>
+    <div class="grid-4">
+      <div class="metric-box">
+        <div class="label">Identified Sound</div>
+        <div class="val accent">Grinding / Friction</div>
+      </div>
+      <div class="metric-box">
+        <div class="label">Dominant Freq</div>
+        <div class="val accent">1,420 Hz</div>
+      </div>
+      <div class="metric-box">
+        <div class="label">Spectral Pattern</div>
+        <div class="val">Continuous Metal Wear</div>
+      </div>
+      <div class="metric-box">
+        <div class="label">Signal-to-Noise</div>
+        <div class="val success">19.4 dB</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Spectral Classification Profiles</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:20%;">Signature</th>
+        <th style="width:25%;">Dominant Freq</th>
+        <th style="width:35%;">Acoustic Waveform Pattern</th>
+        <th style="width:20%;">Associated Defect</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Grinding / Scraping</strong></td>
+        <td>1,420 Hz (Mid-High Resonance)</td>
+        <td>Continuous High-Friction Metal-on-Metal Abrasion</td>
+        <td>Worn Drum Bearings & Shaft Seals</td>
+      </tr>
+      <tr>
+        <td><strong>Thumping / Banging</strong></td>
+        <td>48 Hz (Sub-Bass Impulse)</td>
+        <td>Rhythmic Transient Impact Pulses (2.2 Hz Cadence)</td>
+        <td>Broken Drum Shock Absorber Struts</td>
+      </tr>
+      <tr>
+        <td><strong>Rhythmic Clicking</strong></td>
+        <td>3,200 Hz (Sharp Impulse)</td>
+        <td>Periodic Bi-Metallic Snap / Contact Bounce (0.33 Hz)</td>
+        <td>Failed Compressor PTC Start Relay</td>
+      </tr>
+      <tr>
+        <td><strong>Loud Rattling</strong></td>
+        <td>210 Hz (Chassis Resonance)</td>
+        <td>Asymmetric Rotational Flutter & Loose Housing</td>
+        <td>Misaligned Indoor AC Blower Wheel</td>
+      </tr>
+      <tr>
+        <td><strong>Deep Hum / Buzzing</strong></td>
+        <td>100 Hz / 120 Hz (2x Mains)</td>
+        <td>Continuous Magnetostrictive & Inductive Core Flux</td>
+        <td>Faulty Magnetron / HV Transformer</td>
+      </tr>
+      <tr>
+        <td><strong>High-Pitched Squeal</strong></td>
+        <td>4,850 Hz (High Frequency)</td>
+        <td>Continuous High-Velocity Rubber Elastomer Slip</td>
+        <td>Worn Drive Belt / Felt Friction Strip</td>
+      </tr>
+      <tr>
+        <td><strong>Continuous Hum</strong></td>
+        <td>850 Hz (Bandpass Core)</td>
+        <td>Hydraulic Cavitation & Rotor Resistance</td>
+        <td>Seized Dishwasher Wash Pump Motor</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>4. Appliance Failure Database Matrix</h2>
+  <p>
+    <code>failureDatabase.js</code> maps 6 major household appliance categories to exhaustive diagnostic profiles:
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:22%;">Appliance Category</th>
+        <th style="width:23%;">Auto-Detected Pattern</th>
+        <th style="width:30%;">Diagnosed Component</th>
+        <th style="width:25%;">Estimated Parts Cost</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Washing Machine</td>
+        <td>Grinding / Scraping</td>
+        <td>Main Drum Bearing & Rear Shaft Seal</td>
+        <td>₹600 – ₹1,800 ($8 – $25 USD)</td>
+      </tr>
+      <tr>
+        <td>Washing Machine</td>
+        <td>Thumping / Banging</td>
+        <td>Drum Shock Absorbers / Struts</td>
+        <td>₹400 – ₹1,200 ($6 – $18 USD)</td>
+      </tr>
+      <tr>
+        <td>Washing Machine</td>
+        <td>High Squeal</td>
+        <td>Drive Belt & Motor Pulley</td>
+        <td>₹200 – ₹700 ($3 – $10 USD)</td>
+      </tr>
+      <tr>
+        <td>Refrigerator</td>
+        <td>Rhythmic Clicking</td>
+        <td>Compressor PTC Start Relay</td>
+        <td>₹200 – ₹800 ($3 – $12 USD)</td>
+      </tr>
+      <tr>
+        <td>Refrigerator</td>
+        <td>Loud Humming</td>
+        <td>Freezer Evaporator Fan Motor</td>
+        <td>₹400 – ₹1,200 ($6 – $17 USD)</td>
+      </tr>
+      <tr>
+        <td>Split Air Conditioner</td>
+        <td>Loud Rattling</td>
+        <td>Indoor Blower Wheel Assembly</td>
+        <td>₹0 – ₹1,500 ($0 – $22 USD)</td>
+      </tr>
+      <tr>
+        <td>Split Air Conditioner</td>
+        <td>Deep Humming</td>
+        <td>Outdoor Condenser Fan Motor</td>
+        <td>₹800 – ₹2,500 ($11 – $36 USD)</td>
+      </tr>
+      <tr>
+        <td>Microwave Oven</td>
+        <td>Deep Hum / Buzz</td>
+        <td>High-Voltage Magnetron Module</td>
+        <td>₹1,200 – ₹3,500 ($17 – $50 USD)</td>
+      </tr>
+      <tr>
+        <td>Dishwasher</td>
+        <td>Low Humming</td>
+        <td>Circulation Wash Pump Motor</td>
+        <td>₹800 – ₹2,500 ($11 – $36 USD)</td>
+      </tr>
+      <tr>
+        <td>Clothes Dryer</td>
+        <td>High-Pitched Squeal</td>
+        <td>Drum Felt Seal & Idler Pulley</td>
+        <td>₹600 – ₹1,500 ($9 – $22 USD)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════ -->
+  <!-- PAGE 3: COMPONENT ARCHITECTURE & SAFETY STANDARDS                        -->
+  <!-- ═════════════════════════════════════════════════════════════════════════ -->
+  <div class="page-break"></div>
+
+  <h2>5. Component-by-Component Technical Breakdown</h2>
+
+  <div class="card">
+    <h3 style="margin-top:0;">ApplianceForm.js — Category & Brand Selector</h3>
+    <p>
+      Renders 6 interactive category tiles (🫧 Washing Machine, ❄️ Refrigerator, 🌬️ Split AC, 📡 Microwave, 🍽️ Dishwasher, 💨 Dryer). Dynamically cascades appliance types and selects from 15 global manufacturers (Samsung, LG, Haier, Bosch, Whirlpool, IFB, Godrej, Panasonic, Voltas, Daikin, Carrier, Blue Star, Electrolux, Siemens, Hitachi).
+    </p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0;">AudioRecorder.js & WaveformVisual.js — Audio Capture & Canvas Engine</h3>
+    <p>
+      Manages the browser microphone stream via <code>navigator.mediaDevices.getUserMedia</code>. Enforces a 10-second countdown with an SVG circular progress indicator. The <code>WaveformVisual</code> component uses <code>window.requestAnimationFrame</code> and an <code>AnalyserNode</code> (FFT size 2048, smoothing 0.75) to render a crisp glowing yellow oscilloscope on a black backdrop, scaled by <code>devicePixelRatio</code> for Retina clarity.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0;">DiagnosticReport.js — High-Contrast Reporting Dashboard</h3>
+    <p>
+      Features a color-coded gradient severity bar (<code>#EF4444</code> High Risk, <code>#F97316</code> Moderate, <code>#22C55E</code> Low Risk), an <strong>AUTO-DIAGNOSED</strong> badge, a confidence progress meter, safety hazard callouts, detailed technical explanations, step-by-step DIY repair guides, and a print stylesheet for paper or PDF export.
+    </p>
+  </div>
+
+  <h2>6. Safety Hazards & DIY Protocols</h2>
+  <p>
+    Every diagnosis embeds non-negotiable safety rules appropriate to the target appliance:
+  </p>
+
+  <div class="alert-box">
+    <strong>☠️ LETHAL HIGH VOLTAGE (Microwave Magnetron & Capacitors):</strong><br>
+    High-voltage circuits store lethal charge (up to 6,000V / 1µF) even when unplugged. Always bridge terminals with a 20kΩ/10W resistor probe before touching internal components.
+  </div>
+
+  <div class="alert-box">
+    <strong>⚡ MAINS ISOLATION & CAPACITOR DISCHARGE (ACs & Washers):</strong><br>
+    Cut power at the main circuit breaker rather than relying on remote controls or wall switches. Motors and condenser fan boards maintain high residual charge.
+  </div>
+
+  <div class="info-box">
+    <strong>🧊 REFRIGERANT SAFETY & EVAPORATOR FIN HAZARDS:</strong><br>
+    Refrigerant circuits require certified technicians with brazing and recovery equipment. Aluminum evaporator coil fins are razor-sharp; always wear protective gloves.
+  </div>
+
+  <h2>7. Project File Structure & Verification</h2>
+  <pre>
+c:\Users\kesi\Documents\Diagnosis\
+├── package.json               # Next.js 14.2.5, React 18.3.1, Tailwind 3.4.4
+├── tailwind.config.js         # iQOO tokens (#FFD100, #0F0F11, #E5E7EB)
+├── next.config.js             # Client SPA optimization
+├── postcss.config.js          # PostCSS + Tailwind
+├── README.md                  # Project overview and run guides
+└── src/
+    ├── app/
+    │   ├── layout.js          # Viewport, Google Inter & JetBrains Mono fonts
+    │   └── page.js            # 4-step state machine orchestrator
+    ├── components/
+    │   ├── ApplianceForm.js   # Category, type and manufacturer inputs
+    │   ├── AudioRecorder.js   # Microphone & file uploader
+    │   ├── WaveformVisual.js  # Canvas real-time audio oscilloscope
+    │   └── DiagnosticReport.js# High-contrast report dashboard
+    ├── data/
+    │   └── failureDatabase.js # Structured dictionaries for appliances & faults
+    ├── services/
+    │   └── audioEngine.js     # Automated spectral classification & inference
+    └── styles/
+        └── globals.css        # Tailwind directives & iQOO component classes
+  </pre>
+
+  <div class="footer-note">
+    AeroPulse Diagnostics · Generated for Kesicode/Diagnosis · Repository: github.com/Kesicode/Diagnosis.git · All Acoustic Processing Evaluated In-Browser
+  </div>
+
+</body>
+</html>
